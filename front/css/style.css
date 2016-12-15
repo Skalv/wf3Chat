@@ -1,0 +1,21 @@
+.hide {
+  display: none !important;
+}
+
+html, body {
+  height:100%;
+}
+
+.Login_Form {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.Chat_message {
+  border-radius: 16px;
+}
+.Chat_Form {
+  position: absolute;
+  bottom: 5px;
+}
