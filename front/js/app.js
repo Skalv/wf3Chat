@@ -1,5 +1,8 @@
 // On attends la fin de chargement de la page
 $(document).ready(function() {
+  // variable global, utile pour stocker l'utilisateur en cours
+  var user = null;
+
   // Quand le formulaire est envoyé
   $(".Login_Form").on('submit', function(e) {
     e.preventDefault(); // On stop l'envoi du formulaire
@@ -21,6 +24,8 @@ $(document).ready(function() {
       success: function(response) {
         // Si l'utilisateur est connecté
         if (response.success) {
+          // On sauvegarde en local l'utilisateurs
+          user = response.user;
           // On affiche le chat.
           displayChat();
         } else {
@@ -32,6 +37,7 @@ $(document).ready(function() {
       }
     })
   }
+
   // Hide login form and display chat.
   var displayChat = function() {
     // on cache le formulaire
@@ -46,7 +52,8 @@ $(document).ready(function() {
 
   // Reset userList
   var updateUserList = function() {
-    var $userList = $(".Chat_User");
+    var $userList = $(".Chat_User"); // On retire les données actuelles
+    $userList.empty();
     // On récup la liste des utiliateurs
     $.ajax({
       method: "GET",
@@ -62,8 +69,10 @@ $(document).ready(function() {
     })
   }
 
+  // Reset messages list
   var updateMessages = function() {
     var $messageList = $(".Chat_message");
+    $messageList.empty();// On retire les données actuelles
     // On récup la liste des messages
     $.ajax({
       method: "GET",
@@ -79,4 +88,35 @@ $(document).ready(function() {
     })
   }
 
+  // Message form handler
+  $('.Chat_Form').on('submit', function(event) {
+    event.preventDefault(); // on stop l'envois du formulaire
+    var datas = $(this).serializeArray(); // on récup les données du formulaire
+    // On formate correctement les données de serializeArray en objet JSON.
+    var formatDatas = {};
+    for(var i=0; i < datas.length; i++) {
+      formatDatas[datas[i]['name']] = datas[i]['value'];
+    }
+
+    // On envois le message au serveur.
+    $.ajax({
+      method: "POST",
+      url: "http://localhost/chat/back/message.php",
+      data: {"content" : formatDatas['message'], "userId" : user.id},
+      success: function(res) {
+        console.log(res);
+        if (res.success) {
+          // Je reset la liste des messages.
+          updateMessages();
+          // Je vide mon formulaire.
+          $('.Chat_Form input').val("");
+        }
+      }
+    })
+  })
+
+  // Mise à jour auto des messages.
+  setInterval(function(){
+    updateMessages();
+  }, 10000);
 })
