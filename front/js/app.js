@@ -63,7 +63,20 @@ $(document).ready(function() {
   }
 
   var updateMessages = function() {
-
+    var $messageList = $(".Chat_message");
+    // On récup la liste des messages
+    $.ajax({
+      method: "GET",
+      url: "http://localhost/chat/back/message.php",
+      success: function(res) {
+        // res contient la réponse du serveur.
+        var messages = res.messages; // On récup la liste des messages renvoyés par le serveur.
+        for (var i = 0; i < messages.length; i++) {
+          // On ajoute chaque messages à notre liste HTML.
+          $messageList.append('<li>' + messages[i]['content'] +"</li>");
+        }
+      }
+    })
   }
 
 })
